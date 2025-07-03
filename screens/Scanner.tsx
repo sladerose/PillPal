@@ -14,7 +14,8 @@ import Toast from 'react-native-toast-message';
 import { supabase } from '../lib/supabase';
 import { useUser } from '../context/UserContext';
 import type { RootStackParamList } from '../App';
-import { COLORS } from '../lib/colors';
+import { getColors } from '../lib/colors';
+import Constants from 'expo-constants';
 
 interface Medication {
   id: string;
@@ -38,31 +39,19 @@ const Scanner = () => {
   const [showManualInput, setShowManualInput] = useState(false);
   const [showNotFoundModal, setShowNotFoundModal] = useState(false);
   const [notFoundBarcode, setNotFoundBarcode] = useState('');
-  const [isExpoGo, setIsExpoGo] = useState(false);
+  const isExpoGo = Constants.appOwnership === 'expo';
+  const colors = getColors();
+  const styles = getStyles(colors);
   
   // Use the modern camera permissions hook
   const [permission, requestPermission] = useCameraPermissions();
 
-  // useEffect: Redirect to Login if not authenticated, otherwise check camera availability
+  // useEffect: Redirect to Login if not authenticated
   useEffect(() => {
     if (!session) {
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-      return;
     }
-    checkCameraAvailability();
-  }, [session]);
-
-  // checkCameraAvailability: Detect if CameraView is available (Expo Go fallback)
-  const checkCameraAvailability = async () => {
-    try {
-      // Try to import CameraView to check if it's available
-      const { CameraView } = await import('expo-camera');
-      setIsExpoGo(false);
-    } catch (error) {
-      console.log('Camera not available, using manual input fallback');
-      setIsExpoGo(true);
-    }
-  };
+  }, [session, navigation]);
 
   // searchMedicationByBarcode: Query Supabase for medication by barcode
   const searchMedicationByBarcode = async (barcode: string) => {
@@ -370,7 +359,8 @@ const Scanner = () => {
   );
 };
 
-const styles = StyleSheet.create({
+function getStyles(colors: any) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -427,14 +417,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   manualButton: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 20,
   },
   manualButtonText: {
-    color: COLORS.TEXT_ON_PRIMARY,
+    color: colors.TEXT_ON_PRIMARY,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -472,7 +462,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   searchButton: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -481,18 +471,18 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   searchButtonText: {
-    color: COLORS.TEXT_ON_PRIMARY,
+    color: colors.TEXT_ON_PRIMARY,
     fontSize: 16,
     fontWeight: '600',
   },
   alternativeButton: {
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: colors.SECONDARY,
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   alternativeButtonText: {
-    color: COLORS.TEXT_ON_SECONDARY,
+    color: colors.TEXT_ON_SECONDARY,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -500,7 +490,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.SURFACE,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -508,26 +498,26 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
   },
   buttonContainer: {
     alignItems: 'center',
   },
   button: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
     marginVertical: 8,
   },
   buttonText: {
-    color: COLORS.TEXT_ON_PRIMARY,
+    color: colors.TEXT_ON_PRIMARY,
     fontSize: 16,
     fontWeight: '600',
   },
   permissionText: {
     fontSize: 18,
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -542,7 +532,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.SURFACE,
     borderRadius: 12,
     padding: 20,
     width: '80%',
@@ -567,13 +557,13 @@ const styles = StyleSheet.create({
   },
   modalInput: {
     borderWidth: 1,
-    borderColor: COLORS.OUTLINE,
+    borderColor: colors.OUTLINE,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
-    backgroundColor: COLORS.SURFACE,
-    color: COLORS.TEXT,
+    backgroundColor: colors.SURFACE,
+    color: colors.TEXT,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -587,13 +577,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   modalButtonPrimary: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
   },
   modalButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
   },
 });
+}
 
 export default Scanner; 

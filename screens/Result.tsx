@@ -35,7 +35,7 @@ type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
 
 type AllergyStatus = 'safe' | 'caution' | 'danger';
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 // Result screen displays medication details, AI-generated safety summaries, and personalized safety info based on user profile.
 const Result = () => {
