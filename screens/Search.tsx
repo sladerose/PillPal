@@ -98,6 +98,13 @@ const Search = () => {
     }
   };
 
+  // clearSearch: Clear the search field and results
+  const clearSearch = () => {
+    setSearchQuery('');
+    setMedications([]);
+    setSearched(false);
+  };
+
   // handleMedicationPress: Navigate to Result screen for selected medication
   const handleMedicationPress = (medication: Medication) => {
     navigation.navigate('Result', { medication });
@@ -108,28 +115,29 @@ const Search = () => {
     <TouchableOpacity
       style={styles.card}
       onPress={() => handleMedicationPress(item)}
+      accessible accessibilityRole="button" accessibilityLabel={`View details for ${item.name}`}
     >
-      <Text style={styles.medicationName}>{item.name}</Text>
+      <Text style={styles.medicationName} allowFontScaling>{item.name}</Text>
       {item.usage && (
-        <Text style={styles.medicationUsage}>
-          <Text style={styles.label}>Usage: </Text>
+        <Text style={styles.medicationUsage} allowFontScaling>
+          <Text style={styles.label} allowFontScaling>Usage: </Text>
           {item.usage}
         </Text>
       )}
       {item.dosage && (
-        <Text style={styles.medicationDosage}>
-          <Text style={styles.label}>Dosage: </Text>
+        <Text style={styles.medicationDosage} allowFontScaling>
+          <Text style={styles.label} allowFontScaling>Dosage: </Text>
           {item.dosage}
         </Text>
       )}
       <View style={styles.safetyInfo}>
         <View style={[styles.safetyBadge, item.safe_for_pregnant ? styles.safeBadge : styles.unsafeBadge]}>
-          <Text style={styles.safetyText}>
+          <Text style={styles.safetyText} allowFontScaling>
             {item.safe_for_pregnant ? '✓' : '✗'} Pregnancy
           </Text>
         </View>
         <View style={[styles.safetyBadge, item.safe_for_children ? styles.safeBadge : styles.unsafeBadge]}>
-          <Text style={styles.safetyText}>
+          <Text style={styles.safetyText} allowFontScaling>
             {item.safe_for_children ? '✓' : '✗'} Children
           </Text>
         </View>
@@ -142,7 +150,7 @@ const Search = () => {
     if (!searched) {
       return (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>
+          <Text style={styles.emptyStateText} allowFontScaling>
             Enter a medication name to search
           </Text>
         </View>
@@ -152,7 +160,7 @@ const Search = () => {
     if (medications.length === 0) {
       return (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>
+          <Text style={styles.emptyStateText} allowFontScaling>
             No medications found for "{searchQuery}"
           </Text>
         </View>
@@ -173,18 +181,32 @@ const Search = () => {
           onChangeText={setSearchQuery}
           onSubmitEditing={searchMedications}
           returnKeyType="search"
+          accessible
+          accessibilityLabel="Search medications"
+          allowFontScaling
         />
         <TouchableOpacity
           style={[styles.searchButton, loading && styles.searchButtonDisabled]}
           onPress={searchMedications}
           disabled={loading}
+          accessibilityRole="button"
+          accessibilityLabel="Search"
         >
           {loading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={styles.searchButtonText}>Search</Text>
+            <Text style={styles.searchButtonText} allowFontScaling>Search</Text>
           )}
         </TouchableOpacity>
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={clearSearch}
+            accessible accessibilityRole="button" accessibilityLabel="Clear search"
+          >
+            <Text style={styles.clearButtonText} allowFontScaling>×</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <FlatList
@@ -308,6 +330,21 @@ function getStyles(colors: any) {
       fontSize: 16,
       color: colors.TEXT,
       textAlign: 'center',
+    },
+    clearButton: {
+      marginLeft: 8,
+      backgroundColor: colors.SECONDARY,
+      borderRadius: 16,
+      width: 32,
+      height: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    clearButtonText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: 22,
+      fontWeight: 'bold',
+      lineHeight: 28,
     },
   });
 }

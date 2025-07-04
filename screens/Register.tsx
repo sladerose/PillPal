@@ -17,13 +17,40 @@ const Register = () => {
   const colors = getColors();
   const styles = getStyles(colors);
 
+  // Utility function to validate email format
+  function isValidEmail(email: string): boolean {
+    // Simple regex for email validation
+    return /^\S+@\S+\.\S+$/.test(email);
+  }
+
+  // Utility function to check password strength (at least 6 chars)
+  function isValidPassword(password: string): boolean {
+    return password.length >= 6;
+  }
+
   // handleRegister: Validate input, check password match, sign up with Supabase, show errors or success, and navigate to Login
   const handleRegister = async () => {
     if (!email.trim() || !password || !confirmPassword) {
       Toast.show({
         type: 'error',
         text1: '😅 Oops!',
-        text2: 'Please fill in all fields.',
+        text2: 'Please fill in all fields.'
+      });
+      return;
+    }
+    if (!isValidEmail(email.trim())) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Email',
+        text2: 'Please enter a valid email address.'
+      });
+      return;
+    }
+    if (!isValidPassword(password)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Weak Password',
+        text2: 'Password must be at least 6 characters.'
       });
       return;
     }
@@ -31,7 +58,7 @@ const Register = () => {
       Toast.show({
         type: 'error',
         text1: '🔑 Passwords do not match!',
-        text2: 'Please make sure your passwords match.',
+        text2: 'Please make sure your passwords match.'
       });
       return;
     }
@@ -41,13 +68,13 @@ const Register = () => {
       Toast.show({
         type: 'error',
         text1: '🚫 Registration Failed',
-        text2: error.message,
+        text2: error.message
       });
     } else {
       Toast.show({
         type: 'success',
         text1: '🎉 Welcome!',
-        text2: 'Account created. Please check your email to verify.',
+        text2: 'Account created. Please check your email to verify.'
       });
       navigation.navigate('Login');
     }
@@ -66,7 +93,7 @@ const Register = () => {
         <Text style={styles.welcome}>Create your account! ✨</Text>
         <View style={styles.card}>
           <View style={styles.inputRow}>
-            <Text style={styles.inputEmoji}>✉️</Text>
+            <Text style={styles.inputEmoji} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">✉️</Text>
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -75,10 +102,14 @@ const Register = () => {
               autoCapitalize="none"
               keyboardType="email-address"
               textContentType="emailAddress"
+              accessible
+              accessibilityLabel="Email address"
+              allowFontScaling
+              returnKeyType="next"
             />
           </View>
           <View style={styles.inputRow}>
-            <Text style={styles.inputEmoji}>🔒</Text>
+            <Text style={styles.inputEmoji} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">🔒</Text>
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -86,10 +117,14 @@ const Register = () => {
               onChangeText={setPassword}
               secureTextEntry
               textContentType="newPassword"
+              accessible
+              accessibilityLabel="Password"
+              allowFontScaling
+              returnKeyType="next"
             />
           </View>
           <View style={styles.inputRow}>
-            <Text style={styles.inputEmoji}>🔒</Text>
+            <Text style={styles.inputEmoji} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">🔒</Text>
             <TextInput
               style={styles.input}
               placeholder="Confirm Password"
@@ -97,19 +132,25 @@ const Register = () => {
               onChangeText={setConfirmPassword}
               secureTextEntry
               textContentType="newPassword"
+              accessible
+              accessibilityLabel="Confirm password"
+              allowFontScaling
+              returnKeyType="done"
             />
           </View>
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[styles.button, (loading || !email.trim() || !password || !confirmPassword || !isValidEmail(email) || !isValidPassword(password) || password !== confirmPassword) && styles.buttonDisabled]}
             onPress={handleRegister}
-            disabled={loading}
+            disabled={loading || !email.trim() || !password || !confirmPassword || !isValidEmail(email) || !isValidPassword(password) || password !== confirmPassword}
+            accessibilityRole="button"
+            accessibilityLabel="Register"
           >
-            <Text style={styles.buttonText}>{loading ? 'Registering...' : '✍️ Register'}</Text>
+            <Text style={styles.buttonText} allowFontScaling>{loading ? 'Registering...' : '✍️ Register'}</Text>
           </TouchableOpacity>
           <Text style={styles.tip}>🌈 Join the MedMate family!</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.switchText}>Already have an account? <Text style={{ color: colors.PRIMARY }}>🚀 Login!</Text></Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} accessibilityRole="button" accessibilityLabel="Go to login">
+          <Text style={styles.switchText} allowFontScaling>Already have an account? <Text style={{ color: colors.PRIMARY }}>🚀 Login!</Text></Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

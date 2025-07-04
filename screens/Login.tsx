@@ -26,6 +26,21 @@ const Login = () => {
     }
   }, [session]);
 
+  // Utility function to validate email format
+  function isValidEmail(email: string): boolean {
+    // Simple regex for email validation
+    return /^\S+@\S+\.\S+$/.test(email);
+  }
+
+  // handleForgotPassword: Navigate to a (future) password reset screen or show a toast
+  const handleForgotPassword = () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Password Reset',
+      text2: 'Password reset is coming soon. Please contact support if needed.'
+    });
+  };
+
   // handleLogin: Validate input, sign in with Supabase, show errors if any
   const handleLogin = async () => {
     try {
@@ -33,26 +48,32 @@ const Login = () => {
         Toast.show({
           type: 'error',
           text1: '😅 Oops!',
-          text2: 'Please enter your email and password.',
+          text2: 'Please enter your email and password.'
         });
         return;
       }
-      
+      if (!isValidEmail(email.trim())) {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid Email',
+          text2: 'Please enter a valid email address.'
+        });
+        return;
+      }
       setLoading(true);
       const { error } = await signInWithPassword(email.trim(), password);
-      
       if (error) {
         Toast.show({
           type: 'error',
           text1: '🚫 Login Failed',
-          text2: error.message,
+          text2: error.message
         });
       }
     } catch (err) {
       Toast.show({
         type: 'error',
         text1: '🚫 Login Error',
-        text2: err instanceof Error ? err.message : 'An unexpected error occurred',
+        text2: err instanceof Error ? err.message : 'An unexpected error occurred'
       });
     } finally {
       setLoading(false);
@@ -70,7 +91,7 @@ const Login = () => {
         <Text style={styles.welcome}>Welcome back! 👋</Text>
         <View style={styles.card}>
           <View style={styles.inputRow}>
-            <Text style={styles.inputEmoji}>✉️</Text>
+            <Text style={styles.inputEmoji} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">✉️</Text>
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -79,10 +100,14 @@ const Login = () => {
               autoCapitalize="none"
               keyboardType="email-address"
               textContentType="emailAddress"
+              accessible
+              accessibilityLabel="Email address"
+              allowFontScaling
+              returnKeyType="next"
             />
           </View>
           <View style={styles.inputRow}>
-            <Text style={styles.inputEmoji}>🔒</Text>
+            <Text style={styles.inputEmoji} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">🔒</Text>
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -90,19 +115,28 @@ const Login = () => {
               onChangeText={setPassword}
               secureTextEntry
               textContentType="password"
+              accessible
+              accessibilityLabel="Password"
+              allowFontScaling
+              returnKeyType="done"
             />
           </View>
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[styles.button, (loading || !email.trim() || !password || !isValidEmail(email)) && styles.buttonDisabled]}
             onPress={handleLogin}
-            disabled={loading}
+            disabled={loading || !email.trim() || !password || !isValidEmail(email)}
+            accessibilityRole="button"
+            accessibilityLabel="Login"
           >
-            <Text style={styles.buttonText}>{loading ? 'Logging in...' : '🚀 Login'}</Text>
+            <Text style={styles.buttonText} allowFontScaling>{loading ? 'Logging in...' : '🚀 Login'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordButton} accessibilityRole="button" accessibilityLabel="Forgot password?">
+            <Text style={styles.forgotPasswordText} allowFontScaling>Forgot password?</Text>
           </TouchableOpacity>
           <Text style={styles.tip}>🔐 Your info is safe with us!</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.switchText}>New here? <Text style={{ color: colors.PRIMARY }}>✨ Register!</Text></Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')} accessibilityRole="button" accessibilityLabel="Go to registration">
+          <Text style={styles.switchText} allowFontScaling>New here? <Text style={{ color: colors.PRIMARY }}>✨ Register!</Text></Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -193,6 +227,16 @@ function getStyles(colors: any) {
       fontSize: 16,
       color: colors.PRIMARY,
       marginTop: 12,
+    },
+    forgotPasswordButton: {
+      alignSelf: 'flex-end',
+      marginTop: 4,
+      marginBottom: 8,
+    },
+    forgotPasswordText: {
+      color: colors.SECONDARY,
+      fontSize: 15,
+      textDecorationLine: 'underline',
     },
   });
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { signOut } from '../lib/supabase';
@@ -21,49 +21,70 @@ const Profile = () => {
     }
   }, [session]);
 
-  // handleLogout: Sign out the user
+  // handleLogout: Show confirmation dialog before signing out
   const handleLogout = async () => {
-    await signOut();
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Logout', style: 'destructive', onPress: async () => await signOut() },
+      ]
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>MedMate</Text>
-      <Text style={styles.subtitle}>Welcome back!</Text>
+      <Text style={styles.title} allowFontScaling>MedMate</Text>
+      <Text style={styles.subtitle} allowFontScaling>Welcome back!</Text>
       
+      {/* Optional: Show a profile avatar (placeholder if not set) */}
+      <View style={styles.avatarContainer} accessible accessibilityLabel="Profile avatar">
+        <Image
+          source={require('../assets/icon.png')}
+          style={styles.avatar}
+          resizeMode="cover"
+        />
+      </View>
+
       <View style={styles.userInfo}>
-        <Text style={styles.email}>Email: {user?.email}</Text>
-        <Text style={styles.name}>Name: {profile?.full_name || 'Not set'}</Text>
+        <Text style={styles.email} allowFontScaling>Email: {user?.email}</Text>
+        <Text style={styles.name} allowFontScaling>Name: {profile?.full_name || 'Not set'}</Text>
       </View>
 
       <View style={styles.navigationButtons}>
         <TouchableOpacity 
           style={styles.navButton}
           onPress={() => navigation.navigate('Search')}
+          accessible accessibilityRole="button" accessibilityLabel="Search Medications"
         >
-          <Text style={styles.navButtonText}>🔍 Search Medications</Text>
+          <Text style={styles.navButtonText} allowFontScaling>🔍 Search Medications</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.navButton}
           onPress={() => navigation.navigate('Scanner')}
+          accessible accessibilityRole="button" accessibilityLabel="Scan Barcode"
         >
-          <Text style={styles.navButtonText}>📷 Scan Barcode</Text>
+          <Text style={styles.navButtonText} allowFontScaling>📷 Scan Barcode</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.navButton}
           onPress={() => navigation.navigate('ProfileScreen')}
+          accessible accessibilityRole="button" accessibilityLabel="Edit Profile"
         >
-          <Text style={styles.navButtonText}>👤 Edit Profile</Text>
+          <Text style={styles.navButtonText} allowFontScaling>👤 Edit Profile</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity 
         style={styles.logoutButton}
         onPress={handleLogout}
+        accessibilityRole="button"
+        accessibilityLabel="Logout"
       >
-        <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.logoutButtonText} allowFontScaling>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -142,7 +163,28 @@ function getStyles(colors: any) {
       color: colors.TEXT_ON_SECONDARY,
       fontSize: 18,
       fontWeight: '600'
-    }
+    },
+    avatarContainer: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: colors.SURFACE,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
+      borderWidth: 2,
+      borderColor: colors.BORDER,
+      shadowColor: colors.BORDER,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    avatar: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+    },
   });
 }
 

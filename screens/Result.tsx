@@ -7,6 +7,7 @@ import AlertBadge from '../components/AlertBadge';
 import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../App';
 import { getColors } from '../lib/colors';
+import { useNavigation } from '@react-navigation/native';
 
 interface Medication {
   id: string;
@@ -40,6 +41,7 @@ const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 // Result screen displays medication details, AI-generated safety summaries, and personalized safety info based on user profile.
 const Result = () => {
   const route = useRoute<ResultScreenRouteProp>();
+  const navigation = useNavigation();
   const { medication } = route.params;
   const { session, profile } = useUser();
   const [allergyStatus, setAllergyStatus] = useState<AllergyStatus>('safe');
@@ -220,6 +222,11 @@ const Result = () => {
     return 'ℹ️';
   };
 
+  // handleReportFeedback: Show a placeholder for user feedback/reporting
+  const handleReportFeedback = () => {
+    Alert.alert('Feedback', 'Feature coming soon! Please contact support if you find incorrect information.');
+  };
+
   // Show user context at the top
   const renderUserContext = () => (
     <View style={styles.userContextBox}>
@@ -322,11 +329,25 @@ const Result = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+        accessible accessibilityRole="button" accessibilityLabel="Go back"
+      >
+        <Text style={styles.backButtonText} allowFontScaling>← Back</Text>
+      </TouchableOpacity>
       {renderDescriptionCard()}
       {renderGeneralSummaryCard()}
       {renderPersonalizedSafetyCard()}
       {renderDetailsCard()}
       {renderUserContext()}
+      <TouchableOpacity
+        style={styles.feedbackButton}
+        onPress={handleReportFeedback}
+        accessible accessibilityRole="button" accessibilityLabel="Report incorrect info or give feedback"
+      >
+        <Text style={styles.feedbackButtonText} allowFontScaling>Report incorrect info / Feedback</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -407,6 +428,34 @@ function getStyles(colors: any) {
       color: colors.SECONDARY,
       marginTop: 4,
       fontStyle: 'italic',
+    },
+    backButton: {
+      marginBottom: 12,
+      alignSelf: 'flex-start',
+      backgroundColor: colors.SURFACE,
+      borderRadius: 8,
+      paddingVertical: 6,
+      paddingHorizontal: 14,
+      borderWidth: 1,
+      borderColor: colors.BORDER,
+    },
+    backButtonText: {
+      color: colors.PRIMARY,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    feedbackButton: {
+      marginTop: 16,
+      alignSelf: 'center',
+      backgroundColor: colors.SECONDARY,
+      borderRadius: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+    },
+    feedbackButtonText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: 16,
+      fontWeight: 'bold',
     },
   });
 }

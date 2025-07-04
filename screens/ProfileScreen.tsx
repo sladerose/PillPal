@@ -93,7 +93,22 @@ const ProfileScreen = () => {
   // saveProfile: Save the user's profile to Supabase and update context
   const saveProfile = async () => {
     if (!user?.id) return;
-
+    if (!fullName.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Missing Name',
+        text2: 'Please enter your full name.'
+      });
+      return;
+    }
+    if (age !== undefined && (isNaN(age) || age < 0 || age > 120)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Age',
+        text2: 'Please enter a valid age.'
+      });
+      return;
+    }
     setSaving(true);
     try {
       const { error } = await supabase
@@ -113,7 +128,7 @@ const ProfileScreen = () => {
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to save profile',
+          text2: 'Failed to save profile'
         });
       } else {
         // Update the profile in context
@@ -128,8 +143,8 @@ const ProfileScreen = () => {
         });
         Toast.show({
           type: 'success',
-          text1: 'Success',
-          text2: 'Profile saved successfully',
+          text1: 'Profile Saved',
+          text2: 'Your profile was saved successfully.'
         });
       }
     } catch (error) {
@@ -137,7 +152,7 @@ const ProfileScreen = () => {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Failed to save profile',
+        text2: 'Failed to save profile'
       });
     } finally {
       setSaving(false);
@@ -199,25 +214,29 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title} allowFontScaling>Profile</Text>
       
       <View style={styles.section}>
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.email}>{user?.email}</Text>
+        <Text style={styles.label} allowFontScaling>Email</Text>
+        <Text style={styles.email} allowFontScaling>{user?.email}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Full Name</Text>
+        <Text style={styles.label} allowFontScaling>Full Name</Text>
         <TextInput
           style={styles.input}
           value={fullName}
           onChangeText={setFullName}
           placeholder="Enter your full name"
+          accessible
+          accessibilityLabel="Full name"
+          allowFontScaling
+          returnKeyType="next"
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Allergies</Text>
+        <Text style={styles.label} allowFontScaling>Allergies</Text>
         <View style={styles.allergyInputContainer}>
           <TextInput
             style={styles.allergyInput}
@@ -225,9 +244,13 @@ const ProfileScreen = () => {
             onChangeText={setNewAllergy}
             placeholder="Add an allergy"
             onSubmitEditing={addAllergy}
+            accessible
+            accessibilityLabel="Add allergy"
+            allowFontScaling
+            returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addAllergy}>
-            <Text style={styles.addButtonText}>Add</Text>
+          <TouchableOpacity style={styles.addButton} onPress={addAllergy} accessibilityRole="button" accessibilityLabel="Add allergy">
+            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
           </TouchableOpacity>
         </View>
         
@@ -237,16 +260,17 @@ const ProfileScreen = () => {
               key={index}
               style={styles.allergyPill}
               onPress={() => removeAllergy(index)}
+              accessible accessibilityRole="button" accessibilityLabel={`Remove allergy ${allergy}`}
             >
-              <Text style={styles.allergyText}>{allergy}</Text>
-              <Text style={styles.removeText}>×</Text>
+              <Text style={styles.allergyText} allowFontScaling>{allergy}</Text>
+              <Text style={styles.removeText} allowFontScaling>×</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Intolerances</Text>
+        <Text style={styles.label} allowFontScaling>Intolerances</Text>
         <View style={styles.allergyInputContainer}>
           <TextInput
             style={styles.allergyInput}
@@ -254,9 +278,13 @@ const ProfileScreen = () => {
             onChangeText={setNewIntolerance}
             placeholder="Add an intolerance"
             onSubmitEditing={addIntolerance}
+            accessible
+            accessibilityLabel="Add intolerance"
+            allowFontScaling
+            returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addIntolerance}>
-            <Text style={styles.addButtonText}>Add</Text>
+          <TouchableOpacity style={styles.addButton} onPress={addIntolerance} accessibilityRole="button" accessibilityLabel="Add intolerance">
+            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.allergiesContainer}>
@@ -265,35 +293,42 @@ const ProfileScreen = () => {
               key={index}
               style={styles.allergyPill}
               onPress={() => removeIntolerance(index)}
+              accessible accessibilityRole="button" accessibilityLabel={`Remove intolerance ${intolerance}`}
             >
-              <Text style={styles.allergyText}>{intolerance}</Text>
-              <Text style={styles.removeText}>×</Text>
+              <Text style={styles.allergyText} allowFontScaling>{intolerance}</Text>
+              <Text style={styles.removeText} allowFontScaling>×</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Age</Text>
+        <Text style={styles.label} allowFontScaling>Age</Text>
         <TextInput
           style={styles.input}
           value={age !== undefined ? String(age) : ''}
           onChangeText={text => setAge(text ? parseInt(text, 10) : undefined)}
           placeholder="Enter your age"
           keyboardType="numeric"
+          accessible
+          accessibilityLabel="Age"
+          allowFontScaling
+          returnKeyType="done"
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Pregnant</Text>
+        <Text style={styles.label} allowFontScaling>Pregnant</Text>
         <Switch
           value={!!isPregnant}
           onValueChange={setIsPregnant}
+          accessibilityRole="switch"
+          accessibilityLabel="Pregnant"
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Medical Conditions</Text>
+        <Text style={styles.label} allowFontScaling>Medical Conditions</Text>
         <View style={styles.allergyInputContainer}>
           <TextInput
             style={styles.allergyInput}
@@ -301,9 +336,13 @@ const ProfileScreen = () => {
             onChangeText={setNewCondition}
             placeholder="Add a condition"
             onSubmitEditing={addCondition}
+            accessible
+            accessibilityLabel="Add medical condition"
+            allowFontScaling
+            returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addCondition}>
-            <Text style={styles.addButtonText}>Add</Text>
+          <TouchableOpacity style={styles.addButton} onPress={addCondition} accessibilityRole="button" accessibilityLabel="Add medical condition">
+            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.allergiesContainer}>
@@ -312,9 +351,10 @@ const ProfileScreen = () => {
               key={index}
               style={styles.allergyPill}
               onPress={() => removeCondition(index)}
+              accessible accessibilityRole="button" accessibilityLabel={`Remove condition ${condition}`}
             >
-              <Text style={styles.allergyText}>{condition}</Text>
-              <Text style={styles.removeText}>×</Text>
+              <Text style={styles.allergyText} allowFontScaling>{condition}</Text>
+              <Text style={styles.removeText} allowFontScaling>×</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -324,16 +364,18 @@ const ProfileScreen = () => {
         style={[styles.saveButton, saving && styles.saveButtonDisabled]}
         onPress={saveProfile}
         disabled={saving}
+        accessibilityRole="button"
+        accessibilityLabel="Save Profile"
       >
         {saving ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>Save Profile</Text>
+          <Text style={styles.saveButtonText} allowFontScaling>Save Profile</Text>
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} accessibilityRole="button" accessibilityLabel="Logout">
+        <Text style={styles.logoutButtonText} allowFontScaling>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
