@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../App';
 import { getColors } from '../lib/colors';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
 interface Medication {
   id: string;
@@ -36,7 +37,7 @@ type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
 
 type AllergyStatus = 'safe' | 'caution' | 'danger';
 
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+const OPENAI_API_KEY = Constants.expoConfig?.extra?.EXPO_PUBLIC_OPENAI_API_KEY;
 
 // Result screen displays medication details, AI-generated safety summaries, and personalized safety info based on user profile.
 const Result = () => {
