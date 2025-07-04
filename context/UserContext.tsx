@@ -28,32 +28,46 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch profile from Supabase
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    if (!error && data) {
-      setProfile(data);
-    } else {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        setProfile(null);
+      } else if (data) {
+        setProfile(data);
+      } else {
+        setProfile(null);
+      }
+    } catch (err) {
       setProfile(null);
     }
   };
 
   useEffect(() => {
     const getCurrentSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        fetchProfile(data.session.user.id);
-      } else {
-        setProfile(null);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error.message);
+        }
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+        if (data.session?.user) {
+          fetchProfile(data.session.user.id);
+        } else {
+          setProfile(null);
+        }
+      } catch (err) {
+        console.error('Error in getCurrentSession:', err);
       }
     };
     getCurrentSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {

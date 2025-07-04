@@ -1,20 +1,49 @@
-import { createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
+import { createClient } from '@supabase/supabase-js';
+import type { AuthError } from '@supabase/supabase-js';
+import { Alert } from 'react-native';
 
-const SUPABASE_URL = 'https://ngksgohjiagxvjvwfubc.supabase.co'; // TODO: Replace with your Supabase URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5na3Nnb2hqaWFneHZqdndmdWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MTMyNjksImV4cCI6MjA2NzA4OTI2OX0.5kQRfhkF8uB7GeaU8qdb1ZeQMAfHoI-2i6tDKO7PCQM'; // TODO: Replace with your Supabase anon key
+// It's crucial that these are exposed to the client using the EXPO_PUBLIC_ prefix.
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (!supabaseUrl || !supabaseAnonKey) {
+  const message = "CRITICAL ERROR: Make sure you have a .env file with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.";
+  Alert.alert("Configuration Error", message);
+  throw new Error(message);
+}
 
-// Auth helpers
-export const signUp = async (email: string, password: string) => {
-  return supabase.auth.signUp({ email, password });
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // For production apps, it's recommended to use a secure storage option
+    // like expo-secure-store, but AsyncStorage (the default) is fine for now.
+    storage: undefined,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
+
+// The signUp function from your Register screen can also live here.
+export const signUp = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+  const { error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+  });
+  return { error };
 };
 
-export const signInWithPassword = async (email: string, password: string) => {
-  return supabase.auth.signInWithPassword({ email, password });
+// Sign in with email and password
+export const signInWithPassword = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+  return { error };
 };
 
-export const signOut = async () => {
-  return supabase.auth.signOut();
-}; 
+// Sign out the current user
+export const signOut = async (): Promise<{ error: AuthError | null }> => {
+  const { error } = await supabase.auth.signOut();
+  return { error };
+};

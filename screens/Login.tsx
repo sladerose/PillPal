@@ -28,24 +28,35 @@ const Login = () => {
 
   // handleLogin: Validate input, sign in with Supabase, show errors if any
   const handleLogin = async () => {
-    if (!email.trim() || !password) {
+    try {
+      if (!email.trim() || !password) {
+        Toast.show({
+          type: 'error',
+          text1: '😅 Oops!',
+          text2: 'Please enter your email and password.',
+        });
+        return;
+      }
+      
+      setLoading(true);
+      const { error } = await signInWithPassword(email.trim(), password);
+      
+      if (error) {
+        Toast.show({
+          type: 'error',
+          text1: '🚫 Login Failed',
+          text2: error.message,
+        });
+      }
+    } catch (err) {
       Toast.show({
         type: 'error',
-        text1: '😅 Oops!',
-        text2: 'Please enter your email and password.',
+        text1: '🚫 Login Error',
+        text2: err instanceof Error ? err.message : 'An unexpected error occurred',
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-    setLoading(true);
-    const { error } = await signInWithPassword(email.trim(), password);
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: '🚫 Login Failed',
-        text2: error.message,
-      });
-    }
-    setLoading(false);
   };
 
   return (

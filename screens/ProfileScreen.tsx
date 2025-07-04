@@ -16,7 +16,7 @@ import Toast from 'react-native-toast-message';
 import { supabase } from '../lib/supabase';
 import { useUser } from '../context/UserContext';
 import type { RootStackParamList } from '../App';
-import { COLORS } from '../lib/colors';
+import { getColors } from '../lib/colors';
 
 // ProfileScreen allows users to view and edit their profile, including allergies, intolerances, age, pregnancy, and medical conditions.
 const ProfileScreen = () => {
@@ -33,6 +33,8 @@ const ProfileScreen = () => {
   const [isPregnant, setIsPregnant] = useState<boolean | undefined>(undefined);
   const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
   const [newCondition, setNewCondition] = useState('');
+  const colors = getColors();
+  const styles = getStyles(colors);
 
   // useEffect: Redirect to Login if not authenticated, otherwise fetch profile from Supabase
   useEffect(() => {
@@ -337,11 +339,12 @@ const ProfileScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+function getStyles(colors: any) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: colors.BACKGROUND,
   },
   loadingContainer: {
     flex: 1,
@@ -353,7 +356,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 24,
     textAlign: 'center',
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
   },
   section: {
     marginBottom: 24,
@@ -362,24 +365,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
   },
   email: {
     fontSize: 16,
-    color: COLORS.TEXT,
+    color: colors.TEXT,
     padding: 12,
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.SURFACE,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
+    borderColor: colors.BORDER,
   },
   input: {
     fontSize: 16,
     padding: 12,
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.SURFACE,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
+    borderColor: colors.BORDER,
   },
   allergyInputContainer: {
     flexDirection: 'row',
@@ -389,21 +392,21 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     padding: 12,
-    backgroundColor: COLORS.SURFACE,
+    backgroundColor: colors.SURFACE,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
+    borderColor: colors.BORDER,
     marginRight: 8,
   },
   addButton: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
     justifyContent: 'center',
   },
   addButtonText: {
-    color: COLORS.TEXT_ON_PRIMARY,
+    color: colors.TEXT_ON_PRIMARY,
     fontWeight: '600',
   },
   allergiesContainer: {
@@ -414,23 +417,23 @@ const styles = StyleSheet.create({
   allergyPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: colors.SECONDARY,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   allergyText: {
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
     fontSize: 14,
     marginRight: 4,
   },
   removeText: {
-    color: COLORS.PRIMARY,
+    color: colors.PRIMARY,
     fontSize: 16,
     fontWeight: 'bold',
   },
   saveButton: {
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: colors.PRIMARY,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -440,21 +443,22 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   saveButtonText: {
-    color: COLORS.TEXT_ON_PRIMARY,
+    color: colors.TEXT_ON_PRIMARY,
     fontSize: 16,
     fontWeight: '600',
   },
   logoutButton: {
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: colors.SECONDARY,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
   logoutButtonText: {
-    color: COLORS.TEXT_ON_SECONDARY,
+    color: colors.TEXT_ON_SECONDARY,
     fontSize: 16,
     fontWeight: '600',
   },
 });
+}
 
 export default ProfileScreen; 
