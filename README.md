@@ -1,6 +1,6 @@
-# MedMate
+# PillPal
 
-MedMate is a mobile application built with React Native and Expo, designed to help users manage and understand their medications. It features user authentication, a medication search function, and a barcode scanner to quickly identify medications.
+PillPal is a mobile application built with React Native and Expo, designed to help users manage and understand their medications. It features user authentication, a medication search function, and a barcode scanner to quickly identify medications.
 
 ## Features
 
