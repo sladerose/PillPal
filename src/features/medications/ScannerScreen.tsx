@@ -11,10 +11,10 @@ import { CameraView, CameraType, BarcodeScanningResult, useCameraPermissions } f
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../lib/supabase';
-import { useUser } from '../context/UserContext';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { supabase } from '../../lib/supabase';
+import { useUser } from '../../features/profile/context/UserContext';
+import type { RootStackParamList } from '../../../App';
+import { getTheme } from '../../lib/colors';
 import Constants from 'expo-constants';
 
 interface Medication {
@@ -40,8 +40,8 @@ const Scanner = () => {
   const [showNotFoundModal, setShowNotFoundModal] = useState(false);
   const [notFoundBarcode, setNotFoundBarcode] = useState('');
   const isExpoGo = Constants.appOwnership === 'expo';
-  const colors = getColors();
-  const styles = getStyles(colors);
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
   
   // Use the modern camera permissions hook
   const [permission, requestPermission] = useCameraPermissions();
@@ -267,257 +267,277 @@ const Scanner = () => {
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  camera: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scanArea: {
-    width: 250,
-    height: 250,
-    position: 'relative',
-  },
-  corner: {
-    position: 'absolute',
-    width: 30,
-    height: 30,
-    borderColor: '#fff',
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-  },
-  cornerTopRight: {
-    top: 0,
-    right: 0,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
-    borderLeftWidth: 0,
-  },
-  cornerBottomLeft: {
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderTopWidth: 0,
-  },
-  cornerBottomRight: {
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderTopWidth: 0,
-    borderLeftWidth: 0,
-  },
-  instructionText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  manualButton: {
-    backgroundColor: colors.PRIMARY,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  manualButtonText: {
-    color: colors.TEXT_ON_PRIMARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  expoGoContainer: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  expoGoText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
-  },
-  manualInputContainer: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  manualInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 12,
-    backgroundColor: '#fff',
-  },
-  searchButton: {
-    backgroundColor: colors.PRIMARY,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  searchButtonDisabled: {
-    opacity: 0.6,
-  },
-  searchButtonText: {
-    color: colors.TEXT_ON_PRIMARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  alternativeButton: {
-    backgroundColor: colors.SECONDARY,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  alternativeButtonText: {
-    color: colors.TEXT_ON_SECONDARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.SURFACE,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: colors.PRIMARY,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: colors.PRIMARY,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginVertical: 8,
-  },
-  buttonText: {
-    color: colors.TEXT_ON_PRIMARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  permissionText: {
-    fontSize: 18,
-    color: colors.PRIMARY,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: colors.SURFACE,
-    borderRadius: 12,
-    padding: 20,
-    width: '80%',
-    maxWidth: 300,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  modalMessage: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-  barcodeText: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: colors.OUTLINE,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-    backgroundColor: colors.SURFACE,
-    color: colors.TEXT,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  modalButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginHorizontal: 4,
-  },
-  modalButtonPrimary: {
-    backgroundColor: colors.PRIMARY,
-  },
-  modalButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.PRIMARY,
-  },
-  instructions: {
-    fontSize: 16,
-    color: colors.PRIMARY,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  loadingSpinner: {
-    marginVertical: 16,
-  },
-  permissionHelp: {
-    color: colors.SECONDARY,
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  manualInputToggle: {
-    marginTop: 16,
-    marginBottom: 8,
-    alignSelf: 'center',
-  },
-  manualInputToggleText: {
-    color: colors.SECONDARY,
-    fontSize: 16,
-    textDecorationLine: 'underline',
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: colors.BACKGROUND,
+    },
+    camera: {
+      flex: 1,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    scanArea: {
+      width: 250,
+      height: 250,
+      position: 'relative',
+    },
+    corner: {
+      position: 'absolute',
+      width: 30,
+      height: 30,
+      borderColor: '#fff',
+      borderTopWidth: 3,
+      borderLeftWidth: 3,
+    },
+    cornerTopRight: {
+      top: 0,
+      right: 0,
+      borderTopWidth: 3,
+      borderRightWidth: 3,
+      borderLeftWidth: 0,
+    },
+    cornerBottomLeft: {
+      bottom: 0,
+      left: 0,
+      borderBottomWidth: 3,
+      borderLeftWidth: 3,
+      borderTopWidth: 0,
+    },
+    cornerBottomRight: {
+      bottom: 0,
+      right: 0,
+      borderBottomWidth: 3,
+      borderRightWidth: 3,
+      borderTopWidth: 0,
+      borderLeftWidth: 0,
+    },
+    instructionText: {
+      color: '#fff',
+      fontSize: typography.FONT_SIZE_MD,
+      textAlign: 'center',
+      marginTop: spacing.MD,
+      paddingHorizontal: spacing.MD,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    manualButton: {
+      backgroundColor: colors.PRIMARY,
+      paddingHorizontal: spacing.LG,
+      paddingVertical: spacing.SM,
+      borderRadius: spacing.MD,
+      marginTop: spacing.MD,
+    },
+    manualButtonText: {
+      color: colors.TEXT_ON_PRIMARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    expoGoContainer: {
+      flex: 1,
+      padding: spacing.LG,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.SURFACE,
+    },
+    title: {
+      fontSize: typography.FONT_SIZE_XL,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      marginBottom: spacing.MD,
+      textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
+      color: colors.PRIMARY,
+    },
+    expoGoText: {
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.TEXT,
+      textAlign: 'center',
+      marginBottom: spacing.XL,
+      lineHeight: 24,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    manualInputContainer: {
+      width: '100%',
+      marginBottom: spacing.MD,
+    },
+    manualInput: {
+      borderWidth: 1,
+      borderColor: colors.OUTLINE,
+      borderRadius: spacing.MD,
+      padding: spacing.SM,
+      fontSize: typography.FONT_SIZE_MD,
+      marginBottom: spacing.SM,
+      backgroundColor: colors.SURFACE,
+      color: colors.TEXT,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    searchButton: {
+      backgroundColor: colors.PRIMARY,
+      padding: spacing.SM,
+      borderRadius: spacing.MD,
+      alignItems: 'center',
+    },
+    searchButtonDisabled: {
+      opacity: 0.6,
+    },
+    searchButtonText: {
+      color: colors.TEXT_ON_PRIMARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    alternativeButton: {
+      backgroundColor: colors.SECONDARY,
+      padding: spacing.SM,
+      borderRadius: spacing.MD,
+      alignItems: 'center',
+    },
+    alternativeButtonText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    resultContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.SURFACE,
+    },
+    loadingContainer: {
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginTop: spacing.MD,
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    buttonContainer: {
+      alignItems: 'center',
+    },
+    button: {
+      backgroundColor: colors.PRIMARY,
+      paddingHorizontal: spacing.XL,
+      paddingVertical: spacing.SM,
+      borderRadius: spacing.MD,
+      marginVertical: spacing.SM,
+    },
+    buttonText: {
+      color: colors.TEXT_ON_PRIMARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    permissionText: {
+      fontSize: typography.FONT_SIZE_LG,
+      color: colors.PRIMARY,
+      textAlign: 'center',
+      marginBottom: spacing.MD,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    modalOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: colors.SURFACE,
+      borderRadius: spacing.MD,
+      padding: spacing.LG,
+      width: '80%',
+      maxWidth: 300,
+    },
+    modalTitle: {
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      marginBottom: spacing.MD,
+      textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    modalMessage: {
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.TEXT,
+      textAlign: 'center',
+      marginBottom: spacing.LG,
+      lineHeight: 22,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    barcodeText: {
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      color: colors.TEXT,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    modalInput: {
+      borderWidth: 1,
+      borderColor: colors.OUTLINE,
+      borderRadius: spacing.MD,
+      padding: spacing.SM,
+      fontSize: typography.FONT_SIZE_MD,
+      marginBottom: spacing.MD,
+      backgroundColor: colors.SURFACE,
+      color: colors.TEXT,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    modalButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    modalButton: {
+      flex: 1,
+      padding: spacing.SM,
+      borderRadius: spacing.MD,
+      alignItems: 'center',
+      marginHorizontal: 4,
+    },
+    modalButtonPrimary: {
+      backgroundColor: colors.PRIMARY,
+    },
+    modalButtonText: {
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      color: colors.TEXT_ON_PRIMARY, // Default to text on primary for better contrast
+      fontFamily: typography.FONT_FAMILY,
+    },
+    instructions: {
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.PRIMARY,
+      marginBottom: spacing.SM,
+      textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    loadingSpinner: {
+      marginVertical: spacing.MD,
+    },
+    permissionHelp: {
+      color: colors.TEXT,
+      fontSize: typography.FONT_SIZE_SM,
+      marginTop: spacing.SM,
+      textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    manualInputToggle: {
+      marginTop: spacing.MD,
+      marginBottom: spacing.XS,
+      alignSelf: 'center',
+    },
+    manualInputToggleText: {
+      color: colors.PRIMARY,
+      fontSize: typography.FONT_SIZE_MD,
+      textDecorationLine: 'underline',
+      fontFamily: typography.FONT_FAMILY,
+    },
+  });
 }
 
 export default Scanner; 

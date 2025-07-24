@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal, ActivityIndicator, Platform } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import { useUser } from '../context/UserContext';
-import AlertBadge from '../components/AlertBadge';
-import { supabase } from '../lib/supabase';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { useUser } from '../../features/profile/context/UserContext';
+import AlertBadge from './AlertBadge';
+import { supabase } from '../../lib/supabase';
+import type { RootStackParamList } from '../../../App';
+import { getTheme } from '../../lib/colors';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 
@@ -57,8 +57,8 @@ const Result = () => {
   const [aiGeneralSummary, setAiGeneralSummary] = useState<string | null>(null);
   const [aiPersonalizedSummary, setAiPersonalizedSummary] = useState<string | null>(null);
   const [aiSource, setAiSource] = useState<string | null>(null);
-  const colors = getColors();
-  const styles = getStyles(colors);
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
 
   // useEffect: On mount or when session/medication/profile changes, check allergies and fetch documents
   useEffect(() => {
@@ -353,18 +353,18 @@ const Result = () => {
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.BACKGROUND,
-      padding: 16,
+      padding: spacing.MD,
     },
     card: {
       backgroundColor: colors.SURFACE,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 16,
+      borderRadius: spacing.MD,
+      padding: spacing.MD,
+      marginBottom: spacing.MD,
       borderWidth: 1,
       borderColor: colors.BORDER,
       shadowColor: colors.BORDER,
@@ -374,34 +374,38 @@ function getStyles(colors: any) {
       elevation: 1,
     },
     cardTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 8,
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      marginBottom: spacing.SM,
       color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
     },
     cardText: {
-      fontSize: 16,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.TEXT,
-      marginBottom: 4,
+      marginBottom: spacing.XS,
+      fontFamily: typography.FONT_FAMILY,
     },
     cardLabel: {
-      fontSize: 15,
+      fontSize: typography.FONT_SIZE_SM,
       color: colors.PRIMARY,
-      marginTop: 4,
+      marginTop: spacing.XS,
       marginBottom: 2,
+      fontFamily: typography.FONT_FAMILY,
     },
     medName: {
-      fontSize: 22,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_XL,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
       color: colors.PRIMARY,
-      marginBottom: 6,
+      marginBottom: spacing.SM,
       textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
     },
     userContextBox: {
       backgroundColor: colors.SURFACE,
-      borderRadius: 8,
-      padding: 16,
-      marginBottom: 16,
+      borderRadius: spacing.MD,
+      padding: spacing.MD,
+      marginBottom: spacing.MD,
       borderWidth: 1,
       borderColor: colors.BORDER,
       shadowColor: colors.BORDER,
@@ -411,52 +415,58 @@ function getStyles(colors: any) {
       elevation: 1,
     },
     userContextTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
       color: colors.PRIMARY,
-      marginBottom: 8,
+      marginBottom: spacing.SM,
+      fontFamily: typography.FONT_FAMILY,
     },
     userContextItem: {
-      fontSize: 16,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.TEXT,
-      marginBottom: 4,
+      marginBottom: spacing.XS,
+      fontFamily: typography.FONT_FAMILY,
     },
     userContextLabel: {
-      fontWeight: 'bold',
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      fontFamily: typography.FONT_FAMILY,
     },
     cardSource: {
-      fontSize: 13,
-      color: colors.SECONDARY,
-      marginTop: 4,
+      fontSize: typography.FONT_SIZE_XS,
+      color: colors.TEXT,
+      marginTop: spacing.XS,
       fontStyle: 'italic',
+      fontFamily: typography.FONT_FAMILY,
     },
     backButton: {
-      marginBottom: 12,
+      marginBottom: spacing.SM,
       alignSelf: 'flex-start',
       backgroundColor: colors.SURFACE,
-      borderRadius: 8,
-      paddingVertical: 6,
-      paddingHorizontal: 14,
+      borderRadius: spacing.MD,
+      paddingVertical: spacing.XS,
+      paddingHorizontal: spacing.MD,
       borderWidth: 1,
       borderColor: colors.BORDER,
     },
     backButtonText: {
       color: colors.PRIMARY,
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      fontFamily: typography.FONT_FAMILY,
     },
     feedbackButton: {
-      marginTop: 16,
+      marginTop: spacing.MD,
       alignSelf: 'center',
       backgroundColor: colors.SECONDARY,
-      borderRadius: 8,
-      paddingVertical: 10,
-      paddingHorizontal: 18,
+      borderRadius: spacing.MD,
+      paddingVertical: spacing.SM,
+      paddingHorizontal: spacing.LG,
     },
     feedbackButtonText: {
       color: colors.TEXT_ON_SECONDARY,
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      fontFamily: typography.FONT_FAMILY,
     },
   });
 }

@@ -13,10 +13,11 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../lib/supabase';
-import { useUser } from '../context/UserContext';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { supabase } from '../../lib/supabase';
+import { useUser } from '../../features/profile/context/UserContext';
+import type { RootStackParamList } from '../../../App';
+import { getTheme } from '../../lib/colors';
+import Button from '../../components/Button';
 
 // ProfileScreen allows users to view and edit their profile, including allergies, intolerances, age, pregnancy, and medical conditions.
 const ProfileScreen = () => {
@@ -33,8 +34,8 @@ const ProfileScreen = () => {
   const [isPregnant, setIsPregnant] = useState<boolean | undefined>(undefined);
   const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
   const [newCondition, setNewCondition] = useState('');
-  const colors = getColors();
-  const styles = getStyles(colors);
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
 
   // useEffect: Redirect to Login if not authenticated, otherwise fetch profile from Supabase
   useEffect(() => {
@@ -249,9 +250,14 @@ const ProfileScreen = () => {
             allowFontScaling
             returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addAllergy} accessibilityRole="button" accessibilityLabel="Add allergy">
-            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={addAllergy}
+            accessibilityLabel="Add allergy"
+            style={{ marginLeft: spacing.SM }}
+            textStyle={{ fontSize: typography.FONT_SIZE_SM }}
+          >
+            Add
+          </Button>
         </View>
         
         <View style={styles.allergiesContainer}>
@@ -283,9 +289,14 @@ const ProfileScreen = () => {
             allowFontScaling
             returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addIntolerance} accessibilityRole="button" accessibilityLabel="Add intolerance">
-            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={addIntolerance}
+            accessibilityLabel="Add intolerance"
+            style={{ marginLeft: spacing.SM }}
+            textStyle={{ fontSize: typography.FONT_SIZE_SM }}
+          >
+            Add
+          </Button>
         </View>
         <View style={styles.allergiesContainer}>
           {intolerances.map((intolerance, index) => (
@@ -341,9 +352,14 @@ const ProfileScreen = () => {
             allowFontScaling
             returnKeyType="done"
           />
-          <TouchableOpacity style={styles.addButton} onPress={addCondition} accessibilityRole="button" accessibilityLabel="Add medical condition">
-            <Text style={styles.addButtonText} allowFontScaling>Add</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={addCondition}
+            accessibilityLabel="Add medical condition"
+            style={{ marginLeft: spacing.SM }}
+            textStyle={{ fontSize: typography.FONT_SIZE_SM }}
+          >
+            Add
+          </Button>
         </View>
         <View style={styles.allergiesContainer}>
           {medicalConditions.map((condition, index) => (
@@ -360,147 +376,158 @@ const ProfileScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+      <Button
         onPress={saveProfile}
+        loading={saving}
         disabled={saving}
-        accessibilityRole="button"
         accessibilityLabel="Save Profile"
+        style={{ marginBottom: spacing.MD }}
       >
-        {saving ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.saveButtonText} allowFontScaling>Save Profile</Text>
-        )}
-      </TouchableOpacity>
+        Save Profile
+      </Button>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} accessibilityRole="button" accessibilityLabel="Logout">
-        <Text style={styles.logoutButtonText} allowFontScaling>Logout</Text>
-      </TouchableOpacity>
+      <Button
+        onPress={handleLogout}
+        variant="secondary"
+        accessibilityLabel="Logout"
+        style={{ width: '100%' }}
+      >
+        Logout
+      </Button>
     </ScrollView>
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: colors.BACKGROUND,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
-    color: colors.PRIMARY,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: colors.PRIMARY,
-  },
-  email: {
-    fontSize: 16,
-    color: colors.TEXT,
-    padding: 12,
-    backgroundColor: colors.SURFACE,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.BORDER,
-  },
-  input: {
-    fontSize: 16,
-    padding: 12,
-    backgroundColor: colors.SURFACE,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.BORDER,
-  },
-  allergyInputContainer: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  allergyInput: {
-    flex: 1,
-    fontSize: 16,
-    padding: 12,
-    backgroundColor: colors.SURFACE,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.BORDER,
-    marginRight: 8,
-  },
-  addButton: {
-    backgroundColor: colors.PRIMARY,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    color: colors.TEXT_ON_PRIMARY,
-    fontWeight: '600',
-  },
-  allergiesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  allergyPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.SECONDARY,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  allergyText: {
-    color: colors.PRIMARY,
-    fontSize: 14,
-    marginRight: 4,
-  },
-  removeText: {
-    color: colors.PRIMARY,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  saveButton: {
-    backgroundColor: colors.PRIMARY,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: colors.TEXT_ON_PRIMARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  logoutButton: {
-    backgroundColor: colors.SECONDARY,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: colors.TEXT_ON_SECONDARY,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
+    container: {
+      flex: 1,
+      padding: spacing.MD,
+      backgroundColor: colors.BACKGROUND,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: typography.FONT_SIZE_XL,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      marginBottom: spacing.XL,
+      textAlign: 'center',
+      color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    section: {
+      marginBottom: spacing.XL,
+    },
+    label: {
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      marginBottom: spacing.SM,
+      color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    email: {
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.TEXT,
+      padding: spacing.SM,
+      backgroundColor: colors.SURFACE,
+      borderRadius: spacing.MD,
+      borderWidth: 1,
+      borderColor: colors.BORDER,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    input: {
+      fontSize: typography.FONT_SIZE_MD,
+      padding: spacing.SM,
+      backgroundColor: colors.SURFACE,
+      borderRadius: spacing.MD,
+      borderWidth: 1,
+      borderColor: colors.BORDER,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    allergyInputContainer: {
+      flexDirection: 'row',
+      marginBottom: spacing.SM,
+    },
+    allergyInput: {
+      flex: 1,
+      fontSize: typography.FONT_SIZE_MD,
+      padding: spacing.SM,
+      backgroundColor: colors.SURFACE,
+      borderRadius: spacing.MD,
+      borderWidth: 1,
+      borderColor: colors.BORDER,
+      marginRight: spacing.SM,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    addButton: {
+      backgroundColor: colors.PRIMARY,
+      paddingHorizontal: spacing.MD,
+      paddingVertical: spacing.SM,
+      borderRadius: spacing.MD,
+      justifyContent: 'center',
+    },
+    addButtonText: {
+      color: colors.TEXT_ON_PRIMARY,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    allergiesContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.SM,
+    },
+    allergyPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.SECONDARY,
+      paddingHorizontal: spacing.MD,
+      paddingVertical: spacing.XS,
+      borderRadius: spacing.XL,
+    },
+    allergyText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: typography.FONT_SIZE_SM,
+      marginRight: spacing.XS,
+      fontFamily: typography.FONT_FAMILY,
+    },
+    removeText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: 'bold',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    saveButton: {
+      backgroundColor: colors.PRIMARY,
+      padding: spacing.MD,
+      borderRadius: spacing.MD,
+      alignItems: 'center',
+      marginBottom: spacing.MD,
+    },
+    saveButtonDisabled: {
+      opacity: 0.6,
+    },
+    saveButtonText: {
+      color: colors.TEXT_ON_PRIMARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    logoutButton: {
+      backgroundColor: colors.SECONDARY,
+      padding: spacing.MD,
+      borderRadius: spacing.MD,
+      alignItems: 'center',
+    },
+    logoutButtonText: {
+      color: colors.TEXT_ON_SECONDARY,
+      fontSize: typography.FONT_SIZE_MD,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
+    },
+  });
 }
 
 export default ProfileScreen; 

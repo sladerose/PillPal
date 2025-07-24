@@ -3,9 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingVi
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { signUp } from '../lib/supabase';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { useAuth } from './hooks/useAuth';
+import { getTheme } from '../../lib/colors';
+import type { RootStackParamList } from '../../../App';
+import Button from '../../components/Button';
 
 // Register screen allows users to create a new account with email and password, handling validation, registration, and navigation.
 const Register = () => {
@@ -13,73 +14,9 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const colors = getColors();
-  const styles = getStyles(colors);
-
-  // Utility function to validate email format
-  function isValidEmail(email: string): boolean {
-    // Simple regex for email validation
-    return /^\S+@\S+\.\S+$/.test(email);
-  }
-
-  // Utility function to check password strength (at least 6 chars)
-  function isValidPassword(password: string): boolean {
-    return password.length >= 6;
-  }
-
-  // handleRegister: Validate input, check password match, sign up with Supabase, show errors or success, and navigate to Login
-  const handleRegister = async () => {
-    if (!email.trim() || !password || !confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: '😅 Oops!',
-        text2: 'Please fill in all fields.'
-      });
-      return;
-    }
-    if (!isValidEmail(email.trim())) {
-      Toast.show({
-        type: 'error',
-        text1: 'Invalid Email',
-        text2: 'Please enter a valid email address.'
-      });
-      return;
-    }
-    if (!isValidPassword(password)) {
-      Toast.show({
-        type: 'error',
-        text1: 'Weak Password',
-        text2: 'Password must be at least 6 characters.'
-      });
-      return;
-    }
-    if (password !== confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: '🔑 Passwords do not match!',
-        text2: 'Please make sure your passwords match.'
-      });
-      return;
-    }
-    setLoading(true);
-    const { error } = await signUp(email.trim(), password);
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: '🚫 Registration Failed',
-        text2: error.message
-      });
-    } else {
-      Toast.show({
-        type: 'success',
-        text1: '🎉 Welcome!',
-        text2: 'Account created. Please check your email to verify.'
-      });
-      navigation.navigate('Login');
-    }
-    setLoading(false);
-  };
+  const { loading, handleRegister } = useAuth();
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
 
   // UI rendering: Show registration form, error messages, and navigation to Login
   return (
@@ -138,56 +75,64 @@ const Register = () => {
               returnKeyType="done"
             />
           </View>
-          <TouchableOpacity
-            style={[styles.button, (loading || !email.trim() || !password || !confirmPassword || !isValidEmail(email) || !isValidPassword(password) || password !== confirmPassword) && styles.buttonDisabled]}
-            onPress={handleRegister}
-            disabled={loading || !email.trim() || !password || !confirmPassword || !isValidEmail(email) || !isValidPassword(password) || password !== confirmPassword}
-            accessibilityRole="button"
+          <Button
+            onPress={() => handleRegister(email, password, confirmPassword)}
+            loading={loading}
+            disabled={loading || !email.trim() || !password || !confirmPassword || password !== confirmPassword}
             accessibilityLabel="Register"
+            style={{ marginTop: spacing.SM, marginBottom: spacing.SM }}
           >
-            <Text style={styles.buttonText} allowFontScaling>{loading ? 'Registering...' : '✍️ Register'}</Text>
-          </TouchableOpacity>
-          <Text style={styles.tip}>🌈 Join the MedMate family!</Text>
+            ✍️ Register
+          </Button>
+          <Text style={[styles.tip, { color: colors.TEXT }]}>🌈 Join the MedMate family!</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} accessibilityRole="button" accessibilityLabel="Go to login">
-          <Text style={styles.switchText} allowFontScaling>Already have an account? <Text style={{ color: colors.PRIMARY }}>🚀 Login!</Text></Text>
-        </TouchableOpacity>
+        <Button
+          onPress={() => navigation.navigate('Login')}
+          variant="secondary"
+          accessibilityLabel="Go to login"
+          style={{ marginTop: spacing.SM }}
+          textStyle={{ fontSize: typography.FONT_SIZE_MD }}
+        >
+          Already have an account? <Text style={{ color: colors.PRIMARY }}>🚀 Login!</Text>
+        </Button>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 24,
+      padding: spacing.LG,
       backgroundColor: 'transparent',
     },
     emoji: {
       fontSize: 56,
-      marginBottom: 8,
+      marginBottom: spacing.XS,
     },
     appName: {
-      fontSize: 32,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_XL,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
       color: colors.PRIMARY,
-      marginBottom: 4,
+      marginBottom: spacing.XS,
+      fontFamily: typography.FONT_FAMILY,
     },
     welcome: {
-      fontSize: 18,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.PRIMARY,
-      marginBottom: 24,
+      marginBottom: spacing.XL,
+      fontFamily: typography.FONT_FAMILY,
     },
     card: {
       backgroundColor: colors.SURFACE,
-      borderRadius: 16,
-      padding: 24,
+      borderRadius: spacing.XL,
+      padding: spacing.LG,
       width: '100%',
       maxWidth: 400,
-      marginBottom: 24,
+      marginBottom: spacing.XL,
       shadowColor: colors.BORDER,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
@@ -197,50 +142,54 @@ function getStyles(colors: any) {
     inputRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 16,
+      marginBottom: spacing.MD,
       backgroundColor: colors.SURFACE,
-      borderRadius: 8,
+      borderRadius: spacing.MD,
       borderWidth: 1,
       borderColor: colors.BORDER,
-      paddingHorizontal: 12,
+      paddingHorizontal: spacing.SM,
     },
     inputEmoji: {
       fontSize: 22,
-      marginRight: 8,
+      marginRight: spacing.XS,
     },
     input: {
       flex: 1,
-      fontSize: 16,
-      paddingVertical: 12,
+      fontSize: typography.FONT_SIZE_MD,
+      paddingVertical: spacing.SM,
       color: colors.TEXT,
       backgroundColor: 'transparent',
+      fontFamily: typography.FONT_FAMILY,
     },
     button: {
       backgroundColor: colors.PRIMARY,
-      paddingVertical: 14,
-      borderRadius: 10,
+      paddingVertical: spacing.MD,
+      borderRadius: spacing.LG,
       alignItems: 'center',
-      marginTop: 8,
-      marginBottom: 8,
+      marginTop: spacing.SM,
+      marginBottom: spacing.SM,
     },
     buttonDisabled: {
       opacity: 0.6,
     },
     buttonText: {
       color: colors.TEXT_ON_PRIMARY,
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      fontFamily: typography.FONT_FAMILY,
     },
     tip: {
       color: colors.SECONDARY,
-      fontSize: 14,
+      fontSize: typography.FONT_SIZE_SM,
       textAlign: 'center',
-      marginTop: 8,
+      marginTop: spacing.SM,
+      fontFamily: typography.FONT_FAMILY,
     },
     switchText: {
-      fontSize: 16,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.PRIMARY,
-      marginTop: 12,
+      marginTop: spacing.MD,
+      fontFamily: typography.FONT_FAMILY,
     },
   });
 }

@@ -1,18 +1,19 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { signOut } from '../lib/supabase';
-import { useUser } from '../context/UserContext';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { signOut } from '../../lib/supabase';
+import { useUser } from '../../features/profile/context/UserContext';
+import type { RootStackParamList } from '../../../App';
+import { getTheme } from '../../lib/colors';
+import Button from '../../components/Button';
 
 // Profile screen shows a summary of the user's info and navigation to other app sections.
 const Profile = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session, user, profile } = useUser();
-  const colors = getColors();
-  const styles = getStyles(colors);
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
 
   // useEffect: Redirect to Login if not authenticated
   React.useEffect(() => {
@@ -37,84 +38,80 @@ const Profile = () => {
     <View style={styles.container}>
       <Text style={styles.title} allowFontScaling>MedMate</Text>
       <Text style={styles.subtitle} allowFontScaling>Welcome back!</Text>
-      
       {/* Optional: Show a profile avatar (placeholder if not set) */}
       <View style={styles.avatarContainer} accessible accessibilityLabel="Profile avatar">
         <Image
-          source={require('../assets/icon.png')}
+          source={require('../../../assets/icon.png')}
           style={styles.avatar}
           resizeMode="cover"
         />
       </View>
-
       <View style={styles.userInfo}>
         <Text style={styles.email} allowFontScaling>Email: {user?.email}</Text>
         <Text style={styles.name} allowFontScaling>Name: {profile?.full_name || 'Not set'}</Text>
       </View>
-
       <View style={styles.navigationButtons}>
-        <TouchableOpacity 
-          style={styles.navButton}
+        <Button
           onPress={() => navigation.navigate('Search')}
-          accessible accessibilityRole="button" accessibilityLabel="Search Medications"
+          style={{ marginBottom: spacing.SM }}
+          accessibilityLabel="Search Medications"
         >
-          <Text style={styles.navButtonText} allowFontScaling>🔍 Search Medications</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.navButton}
+          🔍 Search Medications
+        </Button>
+        <Button
           onPress={() => navigation.navigate('Scanner')}
-          accessible accessibilityRole="button" accessibilityLabel="Scan Barcode"
+          style={{ marginBottom: spacing.SM }}
+          accessibilityLabel="Scan Barcode"
         >
-          <Text style={styles.navButtonText} allowFontScaling>📷 Scan Barcode</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.navButton}
-          onPress={() => navigation.navigate('ProfileScreen')}
-          accessible accessibilityRole="button" accessibilityLabel="Edit Profile"
+          📷 Scan Barcode
+        </Button>
+        <Button
+          onPress={() => navigation.navigate('EditProfile')}
+          style={{ marginBottom: spacing.SM }}
+          accessibilityLabel="Edit Profile"
         >
-          <Text style={styles.navButtonText} allowFontScaling>👤 Edit Profile</Text>
-        </TouchableOpacity>
+          👤 Edit Profile
+        </Button>
       </View>
-
-      <TouchableOpacity 
-        style={styles.logoutButton}
+      <Button
         onPress={handleLogout}
-        accessibilityRole="button"
+        variant="secondary"
         accessibilityLabel="Logout"
+        style={{ width: '100%' }}
       >
-        <Text style={styles.logoutButtonText} allowFontScaling>Logout</Text>
-      </TouchableOpacity>
+        Logout
+      </Button>
     </View>
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 20,
+      padding: spacing.LG,
       backgroundColor: colors.BACKGROUND,
     },
     title: { 
-      fontSize: 32, 
-      fontWeight: 'bold',
-      marginBottom: 8,
+      fontSize: typography.FONT_SIZE_XL, 
+      fontWeight: typography.FONT_WEIGHT_BOLD,
+      marginBottom: spacing.SM,
       color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
     },
     subtitle: {
-      fontSize: 18,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.PRIMARY,
-      marginBottom: 30
+      marginBottom: spacing.XL,
+      fontFamily: typography.FONT_FAMILY,
     },
     userInfo: {
       backgroundColor: colors.SURFACE,
-      padding: 20,
-      borderRadius: 12,
-      marginBottom: 30,
+      padding: spacing.LG,
+      borderRadius: spacing.MD,
+      marginBottom: spacing.XL,
       width: '100%',
       shadowColor: colors.BORDER,
       shadowOffset: { width: 0, height: 2 },
@@ -123,23 +120,25 @@ function getStyles(colors: any) {
       elevation: 3
     },
     email: {
-      fontSize: 16,
-      marginBottom: 8,
+      fontSize: typography.FONT_SIZE_MD,
+      marginBottom: spacing.SM,
       color: colors.TEXT,
+      fontFamily: typography.FONT_FAMILY,
     },
     name: {
-      fontSize: 16,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.TEXT,
+      fontFamily: typography.FONT_FAMILY,
     },
     navigationButtons: {
       width: '100%',
-      marginBottom: 30
+      marginBottom: spacing.XL
     },
     navButton: {
       backgroundColor: colors.PRIMARY,
-      padding: 16,
-      borderRadius: 12,
-      marginBottom: 12,
+      padding: spacing.LG,
+      borderRadius: spacing.MD,
+      marginBottom: spacing.SM,
       alignItems: 'center',
       shadowColor: colors.BORDER,
       shadowOffset: { width: 0, height: 2 },
@@ -149,20 +148,22 @@ function getStyles(colors: any) {
     },
     navButtonText: {
       color: colors.TEXT_ON_PRIMARY,
-      fontSize: 18,
-      fontWeight: '600'
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
     },
     logoutButton: {
       backgroundColor: colors.SECONDARY,
-      padding: 16,
-      borderRadius: 12,
+      padding: spacing.LG,
+      borderRadius: spacing.MD,
       width: '100%',
       alignItems: 'center'
     },
     logoutButtonText: {
       color: colors.TEXT_ON_SECONDARY,
-      fontSize: 18,
-      fontWeight: '600'
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: '600',
+      fontFamily: typography.FONT_FAMILY,
     },
     avatarContainer: {
       width: 80,
@@ -171,7 +172,7 @@ function getStyles(colors: any) {
       backgroundColor: colors.SURFACE,
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 16,
+      marginBottom: spacing.MD,
       borderWidth: 2,
       borderColor: colors.BORDER,
       shadowColor: colors.BORDER,

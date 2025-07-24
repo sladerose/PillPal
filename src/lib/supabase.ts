@@ -39,6 +39,9 @@ export const signInWithPassword = async (email: string, password: string): Promi
     email: email,
     password: password,
   });
+  if (error) {
+    console.error("Supabase signInWithPassword error:", error);
+  }
   return { error };
 };
 

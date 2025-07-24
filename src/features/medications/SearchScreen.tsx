@@ -12,10 +12,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../lib/supabase';
-import { useUser } from '../context/UserContext';
-import type { RootStackParamList } from '../App';
-import { getColors } from '../lib/colors';
+import { supabase } from '../../lib/supabase';
+import { useUser } from '../../features/profile/context/UserContext';
+import type { RootStackParamList } from '../../../App';
+import { getTheme } from '../../lib/colors';
 
 interface Medication {
   id: string;
@@ -37,8 +37,8 @@ const Search = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const colors = getColors();
-  const styles = getStyles(colors);
+  const { colors, spacing, typography } = getTheme();
+  const styles = getStyles(colors, spacing, typography);
 
   // useEffect: Redirect to Login if not authenticated
   React.useEffect(() => {
@@ -221,7 +221,7 @@ const Search = () => {
   );
 };
 
-function getStyles(colors: any) {
+function getStyles(colors: any, spacing: any, typography: any) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -229,7 +229,7 @@ function getStyles(colors: any) {
     },
     searchContainer: {
       flexDirection: 'row',
-      padding: 16,
+      padding: spacing.MD,
       backgroundColor: colors.SURFACE,
       borderBottomWidth: 1,
       borderBottomColor: colors.BORDER,
@@ -239,18 +239,19 @@ function getStyles(colors: any) {
       height: 44,
       borderWidth: 1,
       borderColor: colors.OUTLINE,
-      borderRadius: 8,
-      paddingHorizontal: 12,
-      fontSize: 16,
-      marginRight: 8,
+      borderRadius: spacing.MD,
+      paddingHorizontal: spacing.SM,
+      fontSize: typography.FONT_SIZE_MD,
+      marginRight: spacing.SM,
       color: colors.TEXT,
       backgroundColor: colors.SURFACE,
+      fontFamily: typography.FONT_FAMILY,
     },
     searchButton: {
       backgroundColor: colors.PRIMARY,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingHorizontal: spacing.MD,
+      paddingVertical: spacing.SM,
+      borderRadius: spacing.MD,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -260,15 +261,17 @@ function getStyles(colors: any) {
     searchButtonText: {
       color: colors.TEXT_ON_PRIMARY,
       fontWeight: '600',
+      fontSize: typography.FONT_SIZE_MD,
+      fontFamily: typography.FONT_FAMILY,
     },
     listContainer: {
-      padding: 16,
+      padding: spacing.MD,
     },
     card: {
       backgroundColor: colors.SURFACE,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 12,
+      borderRadius: spacing.MD,
+      padding: spacing.MD,
+      marginBottom: spacing.SM,
       borderWidth: 1,
       borderColor: colors.BORDER,
       shadowColor: colors.BORDER,
@@ -281,33 +284,37 @@ function getStyles(colors: any) {
       elevation: 1,
     },
     medicationName: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      fontSize: typography.FONT_SIZE_LG,
+      fontWeight: typography.FONT_WEIGHT_BOLD,
       color: colors.PRIMARY,
-      marginBottom: 8,
+      marginBottom: spacing.SM,
+      fontFamily: typography.FONT_FAMILY,
     },
     medicationUsage: {
-      fontSize: 14,
+      fontSize: typography.FONT_SIZE_SM,
       color: colors.TEXT,
       marginBottom: 4,
+      fontFamily: typography.FONT_FAMILY,
     },
     medicationDosage: {
-      fontSize: 14,
+      fontSize: typography.FONT_SIZE_SM,
       color: colors.TEXT,
-      marginBottom: 8,
+      marginBottom: spacing.SM,
+      fontFamily: typography.FONT_FAMILY,
     },
     label: {
       fontWeight: '600',
       color: colors.PRIMARY,
+      fontFamily: typography.FONT_FAMILY,
     },
     safetyInfo: {
       flexDirection: 'row',
-      gap: 8,
+      gap: spacing.SM,
     },
     safetyBadge: {
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 12,
+      paddingHorizontal: spacing.SM,
+      paddingVertical: spacing.XS,
+      borderRadius: spacing.MD,
     },
     safeBadge: {
       backgroundColor: colors.SECONDARY,
@@ -316,25 +323,27 @@ function getStyles(colors: any) {
       backgroundColor: colors.SECONDARY,
     },
     safetyText: {
-      fontSize: 12,
+      fontSize: typography.FONT_SIZE_XS,
       fontWeight: '600',
-      color: colors.PRIMARY,
+      color: colors.TEXT_ON_SECONDARY,
+      fontFamily: typography.FONT_FAMILY,
     },
     emptyState: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: 40,
+      paddingVertical: spacing.XL,
     },
     emptyStateText: {
-      fontSize: 16,
+      fontSize: typography.FONT_SIZE_MD,
       color: colors.TEXT,
       textAlign: 'center',
+      fontFamily: typography.FONT_FAMILY,
     },
     clearButton: {
-      marginLeft: 8,
+      marginLeft: spacing.SM,
       backgroundColor: colors.SECONDARY,
-      borderRadius: 16,
+      borderRadius: spacing.LG,
       width: 32,
       height: 32,
       alignItems: 'center',
@@ -342,9 +351,10 @@ function getStyles(colors: any) {
     },
     clearButtonText: {
       color: colors.TEXT_ON_SECONDARY,
-      fontSize: 22,
+      fontSize: typography.FONT_SIZE_XL,
       fontWeight: 'bold',
       lineHeight: 28,
+      fontFamily: typography.FONT_FAMILY,
     },
   });
 }

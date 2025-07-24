@@ -21,10 +21,13 @@ PillPal is a mobile application built with React Native and Expo, designed to he
 
 ## Project Structure
 
-- `assets/`: Contains static assets like images.
-- `components/`: Reusable UI components.
-- `context/`: React Context for global state management (e.g., `UserContext`).
-- `lib/`: Utility functions or configurations (e.g., Supabase client).
-- `screens/`: Different screens/pages of the application (Login, Register, Search, Scanner, etc.).
+- `src/`: Main source code directory.
+  - `assets/`: Static assets like images and fonts.
+  - `components/`: Global, reusable UI components (Buttons, Inputs, etc.).
+  - `features/`: Feature-based modules (e.g., `auth`, `medication-search`). Each feature contains its own screens, components, hooks, and services.
+  - `hooks/`: Global React hooks.
+  - `lib/`: Core libraries and configurations (e.g., Supabase client, theming).
+  - `navigation/`: React Navigation setup and navigators.
+  - `types/`: Shared TypeScript types and interfaces.
 - `App.tsx`: Main application entry point and navigation setup.
 - `package.json`: Project dependencies and scripts.
