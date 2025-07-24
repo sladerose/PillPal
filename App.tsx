@@ -7,8 +7,7 @@ import Register from './src/features/auth/RegisterScreen';
 import Profile from './src/features/profile/ProfileScreen';
 import ProfileScreen from './src/features/profile/EditProfileScreen';
 import Search from './src/features/medications/SearchScreen';
-import Scanner from './src/features/medications/ScannerScreen';
-import Result from './src/features/medications/ResultScreen';
+import LazyScreenWrapper from './src/components/LazyScreenWrapper';
 import { UserProvider } from './src/features/profile/context/UserContext';
 import { Medication } from './src/types/medication';
 
@@ -34,8 +33,14 @@ export default function App() {
           <Stack.Screen name="ViewProfile" component={Profile} />
           <Stack.Screen name="EditProfile" component={ProfileScreen} />
           <Stack.Screen name="Search" component={Search} />
-          <Stack.Screen name="Scanner" component={Scanner} />
-          <Stack.Screen name="Result" component={Result} />
+          <Stack.Screen
+            name="Scanner"
+            component={(props) => <LazyScreenWrapper getComponent={() => import('./src/features/medications/ScannerScreen')} {...props} />}
+          />
+          <Stack.Screen
+            name="Result"
+            component={(props) => <LazyScreenWrapper getComponent={() => import('./src/features/medications/ResultScreen')} {...props} />}
+          />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />

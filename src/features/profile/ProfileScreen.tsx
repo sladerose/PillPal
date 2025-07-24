@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { signOut } from '../../lib/supabase';
+import { signOut } from '../../services/supabase';
 import { useUser } from '../../features/profile/context/UserContext';
 import type { RootStackParamList } from '../../../App';
 import { getTheme } from '../../lib/colors';

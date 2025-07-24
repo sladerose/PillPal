@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../services/supabase';
 import { useUser } from '../../features/profile/context/UserContext';
 import type { RootStackParamList } from '../../../App';
 import { getTheme } from '../../lib/colors';

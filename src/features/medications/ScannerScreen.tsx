@@ -11,7 +11,8 @@ import { CameraView, CameraType, BarcodeScanningResult, useCameraPermissions } f
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../services/supabase';
+import { searchMedications } from '../../services/medicationService';
 import { useUser } from '../../features/profile/context/UserContext';
 import type { RootStackParamList } from '../../../App';
 import { getTheme } from '../../lib/colors';
@@ -38,10 +39,13 @@ const Scanner = () => {
   const [manualBarcode, setManualBarcode] = useState('');
   const [showManualInput, setShowManualInput] = useState(false);
   const [showNotFoundModal, setShowNotFoundModal] = useState(false);
+  const [ocrResult, setOcrResult] = useState('');
+  const [ocrLoading, setOcrLoading] = useState(false);
   const [notFoundBarcode, setNotFoundBarcode] = useState('');
   const isExpoGo = Constants.appOwnership === 'expo';
   const { colors, spacing, typography } = getTheme();
   const styles = getStyles(colors, spacing, typography);
+  const cameraRef = useRef<CameraView>(null);
   
   // Use the modern camera permissions hook
   const [permission, requestPermission] = useCameraPermissions();
@@ -236,8 +240,43 @@ const Scanner = () => {
     <View style={styles.container}>
       <Text style={styles.title} allowFontScaling>Barcode Scanner</Text>
       <Text style={styles.instructions} allowFontScaling>Align the barcode within the frame to scan automatically.</Text>
-      {/* CameraView and scan UI would go here */}
+      
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        barcodeScannerSettings={{ barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e", "code39", "code93", "code128", "pdf417", "qr"] }}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.scanArea}>
+            <View style={styles.corner} />
+            <View style={[styles.corner, styles.cornerTopRight]} />
+            <View style={[styles.corner, styles.cornerBottomLeft]} />
+            <View style={[styles.corner, styles.cornerBottomRight]} />
+          </View>
+          <Text style={styles.instructionText} allowFontScaling>Scan a barcode or take a photo for OCR</Text>
+        </View>
+      </CameraView>
+
       {loading && <ActivityIndicator size="large" color={colors.PRIMARY} style={styles.loadingSpinner} />}
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          if (cameraRef.current) {
+            const photo = await cameraRef.current.takePictureAsync({ base64: true });
+            if (photo && photo.uri) {
+              handleImageOCR(photo.uri);
+            }
+          }
+        }}
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel="Take photo for OCR"
+      >
+        <Text style={styles.buttonText} allowFontScaling>Take Photo for OCR</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.manualInputToggle}
         onPress={() => setShowManualInput(!showManualInput)}
@@ -262,6 +301,15 @@ const Scanner = () => {
             <Text style={styles.buttonText} allowFontScaling>Submit</Text>
           </TouchableOpacity>
         </View>
+      )}
+      {ocrLoading ? (
+        <ActivityIndicator size="large" color={colors.PRIMARY} style={styles.loadingSpinner} />
+      ) : (
+        {ocrLoading ? (
+        <ActivityIndicator size="large" color={colors.PRIMARY} style={styles.loadingSpinner} />
+      ) : (
+        ocrResult ? <Text style={styles.ocrResultText}>OCR Result: {ocrResult}</Text> : null
+      )}
       )}
     </View>
   );
@@ -535,6 +583,13 @@ function getStyles(colors: any, spacing: any, typography: any) {
       color: colors.PRIMARY,
       fontSize: typography.FONT_SIZE_MD,
       textDecorationLine: 'underline',
+      fontFamily: typography.FONT_FAMILY,
+    },
+    ocrResultText: {
+      marginTop: spacing.MD,
+      fontSize: typography.FONT_SIZE_MD,
+      color: colors.TEXT,
+      textAlign: 'center',
       fontFamily: typography.FONT_FAMILY,
     },
   });

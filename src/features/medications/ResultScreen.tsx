@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { useUser } from '../../features/profile/context/UserContext';
 import AlertBadge from './AlertBadge';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../services/supabase';
 import type { RootStackParamList } from '../../../App';
 import { getTheme } from '../../lib/colors';
 import { useNavigation } from '@react-navigation/native';

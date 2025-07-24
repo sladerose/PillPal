@@ -41,4 +41,4 @@ const MedCard: React.FC<MedCardProps> = ({ name, description }) => {
   );
 };
 
-export default MedCard; 
+export default React.memo(MedCard); 

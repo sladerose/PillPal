@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { signInWithPassword, signUp } from '../../../lib/supabase';
+import { signInWithPassword, signUp } from '../../services/supabase';
 import type { RootStackParamList } from '../../../App';
 
 export const useAuth = () => {
