@@ -90,7 +90,7 @@ const Button: React.FC<ButtonProps> = ({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? colors.TEXT_ON_PRIMARY : colors.TEXT_ON_SECONDARY} />
+        <ActivityIndicator testID="activity-indicator" color={isPrimary ? colors.TEXT_ON_PRIMARY : colors.TEXT_ON_SECONDARY} />
       ) : (
         <Text style={textStyles} allowFontScaling>{children}</Text>
       )}
